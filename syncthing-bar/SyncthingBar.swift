@@ -10,8 +10,8 @@ import Cocoa
 
 let FolderTag = 1
 
-public class SyncthingBar: NSObject {
-    var statusBar: NSStatusBar = NSStatusBar.systemStatusBar()
+open class SyncthingBar: NSObject {
+    var statusBar: NSStatusBar = NSStatusBar.system()
     var statusBarItem : NSStatusItem = NSStatusItem()
     var menu : NSMenu = NSMenu()
     var openUIItem: NSMenuItem
@@ -21,18 +21,18 @@ public class SyncthingBar: NSObject {
     var settings: SyncthingSettings?
     var setter: SettingsWindowController?
     var log : SyncthingLog
-    public var workspace : NSWorkspace = NSWorkspace.sharedWorkspace()
+    open var workspace : NSWorkspace = NSWorkspace.shared()
     
     public init(log : SyncthingLog) {
         self.log = log
         //Add statusBarItem
-        statusBarItem = statusBar.statusItemWithLength(-1)
+        statusBarItem = statusBar.statusItem(withLength: -1)
         statusBarItem.menu = menu
         
         let size = NSSize(width: 18, height: 18)
         let icon = NSImage(named: "syncthing-bar")
         // mop: that is the preferred way but the image is currently not drawn as it has to be and i am not an artist :(
-        icon?.template = true
+        icon?.isTemplate = true
         icon?.size = size
         statusBarItem.image = icon
         
@@ -41,21 +41,21 @@ public class SyncthingBar: NSObject {
         openUIItem = NSMenuItem()
         openUIItem.title = "Open UI"
         openUIItem.action = #selector(SyncthingBar.openUIAction(_:))
-        openUIItem.enabled = false
+        openUIItem.isEnabled = false
         menu.addItem(openUIItem)
         
         startStopSyncthingItem = NSMenuItem()
         startStopSyncthingItem.title = "Stop Syncthing"
         startStopSyncthingItem.action = #selector(SyncthingBar.startStopSyncthingAction(_:))
-        startStopSyncthingItem.enabled = false
+        startStopSyncthingItem.isEnabled = false
         menu.addItem(startStopSyncthingItem)
         
-        menu.addItem(NSMenuItem.separatorItem())
+        menu.addItem(NSMenuItem.separator())
         
         let openLogItem : NSMenuItem = NSMenuItem()
         openLogItem.title = "Show Log"
         openLogItem.action = #selector(SyncthingBar.openLogAction(_:))
-        openLogItem.enabled = true
+        openLogItem.isEnabled = true
         menu.addItem(openLogItem)
         
         // this will automagically check, if there are already settings stored and load them ...
@@ -64,13 +64,13 @@ public class SyncthingBar: NSObject {
         let openSettingsItem : NSMenuItem = NSMenuItem()
         openSettingsItem.title = "Settings"
         openSettingsItem.action = #selector(SyncthingBar.openSettingsAction(_:))
-        openSettingsItem.enabled = true
+        openSettingsItem.isEnabled = true
         menu.addItem(openSettingsItem)
         
         let quitItem : NSMenuItem = NSMenuItem()
         quitItem.title = "Quit"
         quitItem.action = Selector("quitAction:")
-        quitItem.enabled = true
+        quitItem.isEnabled = true
         menu.addItem(quitItem)
         
         super.init()
@@ -83,22 +83,22 @@ public class SyncthingBar: NSObject {
         self.updateSettings(self.settings!)
     }
     
-    func enableUIOpener(uiUrl: NSString) {
+    func enableUIOpener(_ uiUrl: NSString) {
         url = uiUrl
-        openUIItem.enabled = true
-        startStopSyncthingItem.enabled = true
+        openUIItem.isEnabled = true
+        startStopSyncthingItem.isEnabled = true
     }
     
     func disableUIOpener() {
-        openUIItem.enabled = false
+        openUIItem.isEnabled = false
     }
     
-    func setFolders(folders: Array<SyncthingFolder>) {
+    func setFolders(_ folders: Array<SyncthingFolder>) {
         // mop: should probably check if anything changed ... but first simple stupid :S
-        var item = menu.itemWithTag(FolderTag)
+        var item = menu.item(withTag: FolderTag)
         while (item != nil) {
             menu.removeItem(item!)
-            item = menu.itemWithTag(FolderTag)
+            item = menu.item(withTag: FolderTag)
         }
         
         // mop: maybe findByTag instead of hardcoded number?
@@ -109,49 +109,49 @@ public class SyncthingBar: NSObject {
             folderItem.title = "Open \(folder.label.length > 0 ? folder.label : folder.id) in Finder"
             folderItem.representedObject = folder
             folderItem.action = #selector(SyncthingBar.openFolderAction(_:))
-            folderItem.enabled = true
+            folderItem.isEnabled = true
             folderItem.tag = FolderTag
             folderItem.target = self
-            menu.insertItem(folderItem, atIndex: startInsertIndex + folderCount)
+            menu.insertItem(folderItem, at: startInsertIndex + folderCount)
             folderCount = folderCount + 1
         }
         
         // mop: only add if there were folders (we already have a separator after "Open UI")
         if (folderCount > 0) {
-            let lowerSeparator = NSMenuItem.separatorItem()
+            let lowerSeparator = NSMenuItem.separator()
             // mop: well a bit hacky but we need to clear this one as well ;)
             lowerSeparator.tag = FolderTag
-            menu.insertItem(lowerSeparator, atIndex: startInsertIndex + folderCount)
+            menu.insertItem(lowerSeparator, at: startInsertIndex + folderCount)
         }
     }
     
-    func openUIAction(sender: AnyObject) {
+    func openUIAction(_ sender: AnyObject) {
         if (url != nil) {
-            workspace.openURL(NSURL(string: url! as String)!)
+            workspace.open(URL(string: url! as String)!)
         }
     }
     
-    func startStopSyncthingAction(sender: AnyObject) {
-        let notificationCenter: NSNotificationCenter = NSNotificationCenter.defaultCenter()
+    func startStopSyncthingAction(_ sender: AnyObject) {
+        let notificationCenter: NotificationCenter = NotificationCenter.default
         let title: String = (sender as! NSMenuItem).title
-        if title.rangeOfString("Stop") != nil {
+        if title.range(of: "Stop") != nil {
             (sender as! NSMenuItem).title = "Start Syncthing"
             let startStopData = ["pause": true]
-            notificationCenter.postNotificationName(StartStop, object: self, userInfo: startStopData)
+            notificationCenter.post(name: Notification.Name(rawValue: StartStop), object: self, userInfo: startStopData)
         }
         else {
             (sender as! NSMenuItem).title = "Stop Syncthing"
             let startStopData = ["pause": false]
-            notificationCenter.postNotificationName(StartStop, object: self, userInfo: startStopData)
+            notificationCenter.post(name: Notification.Name(rawValue: StartStop), object: self, userInfo: startStopData)
         }
     }
     
-    public func openFolderAction(sender: AnyObject) {
+    open func openFolderAction(_ sender: AnyObject) {
         let folder = (sender as! NSMenuItem).representedObject as! SyncthingFolder
-        workspace.openURL(NSURL(fileURLWithPath: folder.path as String))
+        workspace.open(URL(fileURLWithPath: folder.path as String))
     }
     
-    func openLogAction(sender: AnyObject) {
+    func openLogAction(_ sender: AnyObject) {
         // mop: recreate even if it exists (not sure if i manually need to close and cleanup :S)
         // seems wrong to me but works (i want to view current log output :S)
         controller = LogWindowController(log: log)
@@ -160,7 +160,7 @@ public class SyncthingBar: NSObject {
         controller?.window?.makeKeyAndOrderFront(self)
     }
     
-    func openSettingsAction(sender: AnyObject) {
+    func openSettingsAction(_ sender: AnyObject) {
         // ctp: settins window only used for syncthing-bar, not syncthing itself, although we could also configure port here ...
         
         setter = SettingsWindowController(settings: self.settings!)
@@ -169,7 +169,7 @@ public class SyncthingBar: NSObject {
         setter?.window?.makeKeyAndOrderFront(self)
     }
     
-    func updateSettings(settings: SyncthingSettings) {
+    func updateSettings(_ settings: SyncthingSettings) {
         // ctp: somewhat redundany to storing this in the settings controller already?
         // maybe we shouldn't create the settings window over and over ?
         
@@ -184,12 +184,12 @@ public class SyncthingBar: NSObject {
         if (self.settings!.bw_icon) {
             if (self.settings!.invert_icon) {
                 icon = NSImage(named: "syncthing-bar-invert")
-                icon?.template = true
+                icon?.isTemplate = true
                 icon?.size = size
                 statusBarItem.image = icon
             } else {
                 icon = NSImage(named: "syncthing-bar")
-                icon?.template = true
+                icon?.isTemplate = true
                 icon?.size = size
                 statusBarItem.image = icon
             }

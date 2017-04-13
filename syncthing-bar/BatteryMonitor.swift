@@ -10,8 +10,8 @@ import Foundation
 
 class BatteryMonitor: NSObject {
     var timer_interval: Double
-    var monitorTimer : NSTimer?
-    var notificationCenter: NSNotificationCenter = NSNotificationCenter.defaultCenter()
+    var monitorTimer : Timer?
+    var notificationCenter: NotificationCenter = NotificationCenter.default
     
     override init() {
         self.timer_interval = 4.0
@@ -20,11 +20,11 @@ class BatteryMonitor: NSObject {
     }
     
     func startMonitor() {
-        if (monitorTimer != nil && monitorTimer!.valid) {
+        if (monitorTimer != nil && monitorTimer!.isValid) {
             return
         }
     
-        monitorTimer = NSTimer.scheduledTimerWithTimeInterval(self.timer_interval,
+        monitorTimer = Timer.scheduledTimer(timeInterval: self.timer_interval,
                                                               target: self,
                                                               selector: #selector(BatteryMonitor.checkBattery(_:)),
                                                               userInfo: nil,
@@ -32,18 +32,18 @@ class BatteryMonitor: NSObject {
     }
     
     func stopMonitor() {
-        if (monitorTimer != nil && monitorTimer!.valid) {
+        if (monitorTimer != nil && monitorTimer!.isValid) {
             monitorTimer!.invalidate()
         }
     }
     
-    func checkBattery(timer: NSTimer) {
-        if (!timer.valid) {
+    func checkBattery(_ timer: Timer) {
+        if (!timer.isValid) {
             return
         }
         
         let startStopData = ["pause" : isOnBattery()]
-        notificationCenter.postNotificationName(StartStop, object: self, userInfo: startStopData)
+        notificationCenter.post(name: Notification.Name(rawValue: StartStop), object: self, userInfo: startStopData)
     }
     
     func isOnBattery() -> Bool {

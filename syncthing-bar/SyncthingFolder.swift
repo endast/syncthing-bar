@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class SyncthingFolder {
+open class SyncthingFolder {
     var id: NSString
     var label: NSString
     var path: NSString

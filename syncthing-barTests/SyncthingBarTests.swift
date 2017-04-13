@@ -11,9 +11,9 @@ import XCTest
 @testable import syncthing_bar
 
 class DummyWorkspace: NSWorkspace {
-    internal var openedUrl : NSURL?
+    internal var openedUrl : URL?
     
-    override func openURL(url: NSURL) -> Bool {
+    override func open(_ url: URL) -> Bool {
         self.openedUrl = url
         return true
     }

@@ -29,7 +29,7 @@ class LogWindowController: NSWindowController {
     override func windowDidLoad() {
         // mop: mehhh...textview doesn't scale when resizing :S no idea yet...
         let joiner = "\n"
-        view.insertText(log.logBuffer.joinWithSeparator(joiner))
+        view.insertText(log.logBuffer.joined(separator: joiner))
         super.windowDidLoad()
     }
 }

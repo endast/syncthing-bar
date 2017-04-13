@@ -16,7 +16,7 @@ class PortFinder {
     }
     
     // https://github.com/glock45/swifter/blob/master/Common/Socket.swift
-    func port_htons(port: in_port_t) -> in_port_t {
+    func port_htons(_ port: in_port_t) -> in_port_t {
         let isLittleEndian = Int(OSHostByteOrder()) == OSLittleEndian
         return isLittleEndian ? _OSSwapInt16(port) : port
     }
@@ -33,7 +33,7 @@ class PortFinder {
             var addr = sockaddr_in(sin_len: __uint8_t(sizeof(sockaddr_in)), sin_family: sa_family_t(AF_INET),
                 sin_port: port_htons(in_port_t(port)), sin_addr: in_addr(s_addr: inet_addr("127.0.0.1")), sin_zero: (0, 0, 0, 0, 0, 0, 0, 0))
             
-            let result = withUnsafePointer(&addr) { (pointer: UnsafePointer<sockaddr_in>) -> (Bool) in
+            let result = withUnsafePointer(to: &addr) { (pointer: UnsafePointer<sockaddr_in>) -> (Bool) in
                 let cfData = CFDataCreate(nil, UnsafePointer<UInt8>(pointer), sizeof(sockaddr_in))
                 let error = CFSocketSetAddress(socket, cfData)
 

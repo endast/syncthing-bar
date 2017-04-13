@@ -65,33 +65,33 @@ class SyncthingSettings {
     }
     
     func loadSettings() {
-        let defaults = NSUserDefaults.standardUserDefaults()
+        let defaults = UserDefaults.standard
         
-        if let bw_icon = defaults.valueForKey(self.bw_icon_key) as? Bool {
+        if let bw_icon = defaults.value(forKey: self.bw_icon_key) as? Bool {
             self.bw_icon = bw_icon
         }
         
-        if let invert_icon = defaults.valueForKey(self.invert_icon_key) as? Bool {
+        if let invert_icon = defaults.value(forKey: self.invert_icon_key) as? Bool {
             self.invert_icon = invert_icon
         }
         
-        if let port_string = defaults.valueForKey(self.port_key) as? String {
+        if let port_string = defaults.value(forKey: self.port_key) as? String {
             self.port = port_string
         }
         
-        if let confirm_exit = defaults.valueForKey(self.confirm_exit_key) as? Bool {
+        if let confirm_exit = defaults.value(forKey: self.confirm_exit_key) as? Bool {
             self.confirm_exit = confirm_exit
         }
         
-        if let monitoring = defaults.valueForKey(self.monitoring_key) as? Bool {
+        if let monitoring = defaults.value(forKey: self.monitoring_key) as? Bool {
             self.monitoring = monitoring
         }
         
-        if let monitor_apps_string = defaults.valueForKey(self.monitor_apps_key) as? String {
+        if let monitor_apps_string = defaults.value(forKey: self.monitor_apps_key) as? String {
             self.monitor_apps = monitor_apps_string
         }
         
-        if let pause_on_battery = defaults.valueForKey(self.pause_on_battery_key) as? Bool {
+        if let pause_on_battery = defaults.value(forKey: self.pause_on_battery_key) as? Bool {
             self.pause_on_battery = pause_on_battery
         }
     }
@@ -99,7 +99,7 @@ class SyncthingSettings {
     func saveSettings() {
         // stored in preference folder
         // (e.g. ~/Library/Preferences/koeln.mop.syncthing-bar.plist)
-        let defaults = NSUserDefaults.standardUserDefaults()
+        let defaults = UserDefaults.standard
         
         defaults.setValue(self.bw_icon, forKey: self.bw_icon_key)
         defaults.setValue(self.invert_icon, forKey: self.invert_icon_key)
@@ -112,7 +112,7 @@ class SyncthingSettings {
         defaults.synchronize()
     }
     
-    func applySettings(wndCtrl: SettingsWindowController) {
+    func applySettings(_ wndCtrl: SettingsWindowController) {
         if (self.bw_icon) {
             wndCtrl.bw_icon_check?.state = NSOnState
         } else {

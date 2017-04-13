@@ -8,16 +8,16 @@
 
 import Foundation
 
-public class SyncthingLog {
+open class SyncthingLog {
     var logBuffer : Array<String> = []
     
     public init() {
     }
     
-    func log(line: String) {
+    func log(_ line: String) {
         logBuffer.append(line)
         if logBuffer.count >= 10000 {
-            logBuffer.removeAtIndex(0)
+            logBuffer.remove(at: 0)
         }
     }
 }

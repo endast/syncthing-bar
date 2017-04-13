@@ -19,7 +19,7 @@ class SettingsWindowController: NSWindowController {
     
     var settings: SyncthingSettings = SyncthingSettings()
     
-    var notificationCenter: NSNotificationCenter = NSNotificationCenter.defaultCenter()
+    var notificationCenter: NotificationCenter = NotificationCenter.default
     
     // mop: found in some blog...some workaround because windowNibName is not a designated init func
     override var windowNibName : String! {
@@ -52,7 +52,7 @@ class SettingsWindowController: NSWindowController {
     
     //settings actions
     
-    @IBAction func bw_icon_checked(sender: NSButton) {
+    @IBAction func bw_icon_checked(_ sender: NSButton) {
         self.settings.bw_icon = (sender.state == NSOnState)
         
         // FIX: this doesn't work - don't know how to fix right now
@@ -65,37 +65,37 @@ class SettingsWindowController: NSWindowController {
         postSettings()
     }
     
-    @IBAction func invert_icon_checked(sender: NSButton) {
+    @IBAction func invert_icon_checked(_ sender: NSButton) {
         self.settings.invert_icon = (sender.state == NSOnState)
         
         postSettings()
     }
     
-    @IBAction func port_changed(sender: NSTextField) {
+    @IBAction func port_changed(_ sender: NSTextField) {
         self.settings.port = sender.stringValue
         
         postSettings()
     }
     
-    @IBAction func confirm_exit_checked(sender: NSButton) {
+    @IBAction func confirm_exit_checked(_ sender: NSButton) {
         self.settings.confirm_exit = (sender.state == NSOnState)
         
         postSettings()
     }
     
-    @IBAction func monitoring_checked(sender: NSButton) {
+    @IBAction func monitoring_checked(_ sender: NSButton) {
         self.settings.monitoring = (sender.state == NSOnState)
         
         postSettings()
     }
     
-    @IBAction func monitor_apps_changed(sender: NSTextField) {
+    @IBAction func monitor_apps_changed(_ sender: NSTextField) {
         self.settings.monitor_apps = sender.stringValue
         
         postSettings()
     }
     
-    @IBAction func pause_on_battery_checked(sender: NSButton) {
+    @IBAction func pause_on_battery_checked(_ sender: NSButton) {
         self.settings.pause_on_battery = (sender.state == NSOnState)
         
         postSettings()
@@ -103,6 +103,6 @@ class SettingsWindowController: NSWindowController {
     
     func postSettings() {
         let settingsData = ["settings": self.settings]
-        self.notificationCenter.postNotificationName(SettingsSet, object: self, userInfo: settingsData)
+        self.notificationCenter.post(name: Notification.Name(rawValue: SettingsSet), object: self, userInfo: settingsData)
     }
 }
