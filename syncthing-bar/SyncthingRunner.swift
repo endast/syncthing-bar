@@ -34,7 +34,7 @@ class SyncthingRunner: NSObject {
     init(log: SyncthingLog) {
         self.paused = false
         self.log = log
-        path = Bundle.main.path(forResource: "syncthing/syncthing", ofType: "")!
+        path = Bundle.main.path(forResource: "syncthing/syncthing", ofType: "")! as NSString
         
         super.init()
     
@@ -52,7 +52,7 @@ class SyncthingRunner: NSObject {
         versionTask.waitUntilExit()
         
         let versionOut = pipe.fileHandleForReading.readDataToEndOfFile()
-        let versionString = NSString(data: versionOut, encoding: String.Encoding.utf8)
+        let versionString = NSString(data: versionOut, encoding: String.Encoding.utf8.rawValue)
         
         let regex = try? NSRegularExpression(pattern: "^syncthing v(\\d+)\\.(\\d+)\\.(\\d+)",
             options: [])
@@ -62,7 +62,7 @@ class SyncthingRunner: NSObject {
             let minor = Int((versionString?.substring(with: results[0].rangeAt(2)))!) as Int!
             let patch = Int((versionString?.substring(with: results[0].rangeAt(3)))!) as Int!
             
-            version = [ major, minor, patch ]
+            version = [ major!, minor!, patch! ]
             print("Syncthing version \(version![0]) \(version![1]) \(version![2])")
             return true
         } else {
@@ -106,7 +106,7 @@ class SyncthingRunner: NSObject {
             // Since we just got the notification from fh, we must tell it to notify us again when it gets more data
             fh.waitForDataInBackgroundAndNotify()
             // Convert the data into a string
-            let string = (buf as String) + (NSString(data: data, encoding: String.Encoding.utf8)! as String)
+            let string = (buf as String) + (NSString(data: data, encoding: String.Encoding.utf8.rawValue)! as String)
             var lines = string.components(separatedBy: "\n")
             buf = lines.removeLast()
             for line in lines {
@@ -160,9 +160,9 @@ class SyncthingRunner: NSObject {
             let pathElement: NSString = "path"
             let foldersElement: NSString = "folders"
             
-            NSURLConnection.sendAsynchronousRequest(request, queue: OperationQueue.main) {(response, data, error) in
+            NSURLConnection.sendAsynchronousRequest(request as URLRequest, queue: OperationQueue.main) {(response, data, error) in
                 if (error != nil) {
-                    print("Got error collecting repositories \(error)")
+                    print("Got error collecting repositories \(String(describing: error))")
                     return;
                 }
                 let httpResponse = response as? HTTPURLResponse;
@@ -192,7 +192,7 @@ class SyncthingRunner: NSObject {
                             let path = ((pathTemp)! as NSString).expandingTildeInPath
                             let label = object[labelElement] as? String
                             
-                            return SyncthingFolder(id: id!, path: path, label: label!)
+                            return SyncthingFolder(id: id! as NSString, path: path as NSString, label: label! as NSString)
                         })
                         
                         let folderData = ["folders": folderStructArr]
@@ -201,7 +201,7 @@ class SyncthingRunner: NSObject {
                         print("Failed to parse folders :(")
                     }
                 } else {
-                    print("Got error collecting repositories \(error)")
+                    print("Got error collecting repositories \(String(describing: error))")
                 }
             }
         }
@@ -215,7 +215,7 @@ class SyncthingRunner: NSObject {
 
                 let request = createRequest("/rest/version")
                 
-                NSURLConnection.sendAsynchronousRequest(request, queue: OperationQueue.main) {(response, data, error) in
+                NSURLConnection.sendAsynchronousRequest(request as URLRequest, queue: OperationQueue.main) {(response, data, error) in
                     if (error == nil) {
                         let httpData = ["host": host!, "port": port!]
                         self.notificationCenter.post(name: Notification.Name(rawValue: HttpChanged), object: self, userInfo: httpData)

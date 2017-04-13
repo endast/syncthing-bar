@@ -30,11 +30,11 @@ class PortFinder {
             }
             let port = startPort + i
             
-            var addr = sockaddr_in(sin_len: __uint8_t(sizeof(sockaddr_in)), sin_family: sa_family_t(AF_INET),
+            var addr = sockaddr_in(sin_len: __uint8_t(MemoryLayout<sockaddr_in>.size), sin_family: sa_family_t(AF_INET),
                 sin_port: port_htons(in_port_t(port)), sin_addr: in_addr(s_addr: inet_addr("127.0.0.1")), sin_zero: (0, 0, 0, 0, 0, 0, 0, 0))
             
             let result = withUnsafePointer(to: &addr) { (pointer: UnsafePointer<sockaddr_in>) -> (Bool) in
-                let cfData = CFDataCreate(nil, UnsafePointer<UInt8>(pointer), sizeof(sockaddr_in))
+                let cfData = CFDataCreate(nil, UnsafePointer<UInt8>(pointer), MemoryLayout<sockaddr_in>.size)
                 let error = CFSocketSetAddress(socket, cfData)
 
                 // mop: ok ... X-Codes autocompletion crashes continously and the docs seem to be wrong

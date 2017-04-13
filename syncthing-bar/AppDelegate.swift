@@ -59,9 +59,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             _ = alert.runModal()
             self.quit()
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.tooManyErrors(_:)), name: TooManyErrorsNotification, object: runner)
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.foldersDetermined(_:)), name: FoldersDetermined, object: runner)
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.httpChanged(_:)), name: HttpChanged, object: runner)
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.tooManyErrors(_:)), name: NSNotification.Name(rawValue: TooManyErrorsNotification), object: runner)
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.foldersDetermined(_:)), name: NSNotification.Name(rawValue: FoldersDetermined), object: runner)
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.httpChanged(_:)), name: NSNotification.Name(rawValue: HttpChanged), object: runner)
         
         self.monitor = MonitorRunner(monitor_apps: syncthingBar?.settings?.monitor_apps)
         if self.syncthingBar!.settings!.monitoring {
@@ -73,10 +73,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.batteryMonitor?.startMonitor()
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.settingsSet(_:)), name: SettingsSet, object: syncthingBar?.setter)
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.startStop(_:)), name: StartStop, object: syncthingBar)
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.startStop(_:)), name: StartStop, object: monitor)
-        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.startStop(_:)), name: StartStop, object: batteryMonitor)
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.settingsSet(_:)), name: NSNotification.Name(rawValue: SettingsSet), object: syncthingBar?.setter)
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.startStop(_:)), name: NSNotification.Name(rawValue: StartStop), object: syncthingBar)
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.startStop(_:)), name: NSNotification.Name(rawValue: StartStop), object: monitor)
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.startStop(_:)), name: NSNotification.Name(rawValue: StartStop), object: batteryMonitor)
     }
     
     func stop() {
@@ -139,7 +139,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             self.syncthingBar!.settings!.port = port as String
             
-            syncthingBar!.enableUIOpener("http://\(host):\(port)")
+            syncthingBar!.enableUIOpener("http://\(host):\(port)" as NSString)
         } else {
             syncthingBar!.disableUIOpener()
         }

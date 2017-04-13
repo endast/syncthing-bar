@@ -69,7 +69,7 @@ open class SyncthingBar: NSObject {
         
         let quitItem : NSMenuItem = NSMenuItem()
         quitItem.title = "Quit"
-        quitItem.action = Selector("quitAction:")
+        quitItem.action = Selector(("quitAction:"))
         quitItem.isEnabled = true
         menu.addItem(quitItem)
         
